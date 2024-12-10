@@ -1,19 +1,24 @@
 //README
-//1- draws lines from the corners of the screen to mouse position 
-//2- draws cookie
+//NO AI OR OTHER SIMILAR HELP WAS USED IN THE MAKING OF THIS PROJECT
+//1- draws lines from the corners of the screen to mouse position
+//2- draws concentric circles
 //3- draws hatch lines
-//4- eraser
-// CTRL+ MOUSEWHEEL SETS BRUSH DENSITY ( works for all brushes)(left number)
-//ALT + MOUSEWHEEL SETS SIZE( works for eraser)(right number in left corner)
+//4- draws vertical lines
+//5- draws horizontal lines
+//6- eraser
+// A AND D SETS BRUSH DENSITY ( works for all brushes except 1)(left number)
+//Q AND E  SETS SIZE (right number)
 // S saves screenshot
 // SPACEBAR erases canvas
 
-
+float r, g, b;
+boolean blackandwhite=true;
 int state=0;
 int frecventa=1;
-int Size=10;
+int Size=1;
 
 void setup() {
+  frameRate(140);
   background(255);
   size(1920/3, 1080/3);
   //fullScreen();
@@ -28,13 +33,34 @@ void draw() {
   text(frecventa, 15, 25);
   fill(153, 153, 102);
   text(Size, 50, 25);
+
+  if (blackandwhite==false) {
+    r=random(0, 255);
+    g=random(0, 255);
+    b=random(0, 255);
+    r++;
+    if (r==255) {
+      r=random(0, 255);
+    }
+    g++;
+    if (g==255) {
+      g=random(0, 255);
+    }
+    b++;
+    if (b==255) {
+      b=random(0, 255);
+    }
+  } else {
+    r=0;
+    g=0;
+    b=0;
+  }
 }
 
 void drawLines() {
-  stroke(0);
+  stroke(r, g, b);
   line(width, height, mouseX, mouseY); //dreapta jos
   line(width, 0, mouseX, mouseY);//dreapta sus
-
   line(0, 0, mouseX, mouseY); // stanga sus
   line(0, height, mouseX, mouseY); //stanga jos
   line(0, 0, mouseX, mouseY); // stanga sus
@@ -44,23 +70,31 @@ void drawLines() {
   line(width, height, mouseX, mouseY); //dreapta jos
 }
 
-void drawCookie() {
-  stroke(0);
-  fill(153, 51, 51);
-  circle(mouseX, mouseY, 50);
-  fill(153, 102, 51);
-  circle(mouseX-10, mouseY-10, 10);
-  fill(153, 102, 51);
-  circle(mouseX+10, mouseY+10, 10);
-  fill(153, 102, 51);
-  circle(mouseX-10, mouseY+15, 10);
-  fill(153, 102, 51);
-  circle(mouseX+13, mouseY-17, 10);
+void drawCircles() {
+  stroke(r, g, b);
+  noFill();
+  circle(mouseX, mouseY, 50*Size);
+  circle(mouseX, mouseY, 40*Size);
+  circle(mouseX, mouseY, 30*Size);
+  circle(mouseX, mouseY, 20*Size);
+  circle(mouseX, mouseY, 10*Size);
 }
 
 void drawHatches() {
+  stroke(r, g, b);
   line(mouseX, mouseY, mouseX-Size, mouseY-Size);
 }
+
+void drawVertlines() {
+  stroke(r, g, b);
+  line(mouseX, height, mouseX, mouseY);
+}
+
+void drawHorizlines() {
+  stroke(r, g, b);
+  line(0, mouseY, mouseX, mouseY);
+}
+
 
 void drawEraser() {
   fill(255, 255, 255);
@@ -69,17 +103,24 @@ void drawEraser() {
 }
 
 void mouseDragged() {
-  if (mouseX%frecventa==0 && mouseY%frecventa==0 && state==0) {
+  if ((mouseX+ mouseY)%frecventa==0 && state==0) {
     drawLines();
   }
-  if (mouseX%frecventa==0 && mouseY%frecventa==0 && state==1) {
-    drawCookie();
+  if ((mouseX+ mouseY)%frecventa==0 && state==1) {
+    drawCircles();
   }
-  if (mouseX%frecventa==0 && mouseY%frecventa==0 && state==2) {
+  if ((mouseX+ mouseY)%frecventa==0 && state==2) {
     drawHatches();
   }
 
-  if (mouseX%frecventa==0 && mouseY%frecventa==0 && state==3) {
+  if ((mouseX+ mouseY)%frecventa==0 && state==3) {
+    drawVertlines();
+  }
+  if ((mouseX+mouseY)%frecventa==0 && state==4) {
+    drawHorizlines();
+  }
+
+  if ((mouseX+ mouseY)%frecventa==0 && state==5) {
     drawEraser();
   }
 }
@@ -89,7 +130,7 @@ void keyPressed() {
   if (keyCode==32) {
     background(255);
   }
-  // Set 1,2,3,4 as brushes
+  // Set 1,2,3,4,5,6 as brushes
   if (key== '1') {
     state=0;
   }
@@ -102,33 +143,46 @@ void keyPressed() {
   if (key== '4') {
     state=3;
   }
+  if (key=='5') {
+    state=4;
+  }
+  if (key=='6') {
+    state=5;
+  }
   if (key =='s') {
     saveFrame();
   }
-  println(state);
-  println(keyCode);
-}
-
-
-void mouseWheel( MouseEvent event) {
-  if (keyPressed== true && keyCode==17) {
-    frecventa =frecventa+event.getCount();
-
-    if (frecventa>7) {
-      frecventa=7;
-    }
-    if (frecventa<1) {
-      frecventa=1;
-    }
-  }
-
-  if (keyPressed== true && keyCode==18) {
-    Size= Size+event.getCount();
+  if (key=='q') {
+    Size--;
   }
   if (Size<1) {
     Size=1;
   }
+  if (key=='e') {
+    Size++;
+  }
+  if (Size>100) {
+    Size=100;
+  }
 
-  //println(event.getCount());
-  //println(frecventa);
+  if (key=='a') {
+    frecventa--;
+  }
+  if (key=='z') {
+    blackandwhite=true;
+  }
+  if (key=='c') {
+    blackandwhite=false;
+  }
+  if (frecventa<1) {
+    frecventa=1;
+  }
+  if (key=='d') {
+    frecventa++;
+  }
+  if (frecventa>10) {
+    frecventa=10;
+  }
+  println(state);
+  println(keyCode);
 }
